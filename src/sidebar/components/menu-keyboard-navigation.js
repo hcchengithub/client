@@ -9,11 +9,26 @@ function isElementVisible(element) {
 }
 
 /**
+ * @template T
+ * @typedef {import("preact/hooks").Ref<T>} Ref
+ */
+
+/**
+ * @typedef MenuKeyboardNavigationProps
+ * @prop {string} [className]
+ * @prop {(e: KeyboardEvent) => any} [closeMenu] - Callback when the menu is closed via keyboard input
+ * @prop {boolean} [visible] - When  true`, sets focus on the first item in the list
+ * @prop {Object} children - Array of nodes which may contain <MenuItems> or any nodes
+ */
+
+/**
  * Helper component used by Menu and MenuItem to facilitate keyboard navigation of a
  * list of <MenuItem> components. This component should not be used directly.
  *
  * Note that `ArrowRight` shall be handled by the parent <MenuItem> directly and
  * all other focus() related navigation is handled here.
+ *
+ * @param {MenuKeyboardNavigationProps} props
  */
 export default function MenuKeyboardNavigation({
   className,
@@ -21,14 +36,17 @@ export default function MenuKeyboardNavigation({
   children,
   visible,
 }) {
-  const menuRef = useRef(null);
+  const menuRef = /** @type {Ref<HTMLDivElement|null>} */ (useRef(null));
 
   useEffect(() => {
     let focusTimer = null;
     if (visible) {
       focusTimer = setTimeout(() => {
         // The focus won't work without delaying rendering.
-        const firstItem = menuRef.current.querySelector('[role^="menuitem"]');
+        /** @type {HTMLFormElement|null} */
+        const firstItem = /** @type {Ref<HTMLDivElement>} */ (menuRef).current.querySelector(
+          '[role^="menuitem"]'
+        );
         if (firstItem) {
           firstItem.focus();
         }
@@ -42,7 +60,9 @@ export default function MenuKeyboardNavigation({
 
   const onKeyDown = event => {
     const menuItems = Array.from(
-      menuRef.current.querySelectorAll('[role^="menuitem"]')
+      /** @type {Ref<HTMLDivElement>} */ (menuRef).current.querySelectorAll(
+        '[role^="menuitem"]'
+      )
     ).filter(isElementVisible);
 
     let focusedIndex = menuItems.findIndex(el =>
@@ -86,7 +106,7 @@ export default function MenuKeyboardNavigation({
     if (handled && focusedIndex >= 0) {
       event.stopPropagation();
       event.preventDefault();
-      menuItems[focusedIndex].focus();
+      /** @type {HTMLFormElement} */ (menuItems[focusedIndex]).focus();
     }
   };
 
