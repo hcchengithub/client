@@ -36,17 +36,14 @@ export default function MenuKeyboardNavigation({
   children,
   visible,
 }) {
-  const menuRef = /** @type {Ref<HTMLDivElement|null>} */ (useRef(null));
+  const menuRef = useRef(/** @type {HTMLElement|null} */ null);
 
   useEffect(() => {
     let focusTimer = null;
     if (visible) {
       focusTimer = setTimeout(() => {
         // The focus won't work without delaying rendering.
-        /** @type {HTMLFormElement|null} */
-        const firstItem = /** @type {Ref<HTMLDivElement>} */ (menuRef).current.querySelector(
-          '[role^="menuitem"]'
-        );
+        const firstItem = menuRef.current;
         if (firstItem) {
           firstItem.focus();
         }
@@ -60,9 +57,8 @@ export default function MenuKeyboardNavigation({
 
   const onKeyDown = event => {
     const menuItems = Array.from(
-      /** @type {Ref<HTMLDivElement>} */ (menuRef).current.querySelectorAll(
-        '[role^="menuitem"]'
-      )
+      /** @ts-ignore - assume current is not null */
+      menuRef.current.querySelectorAll('[role^="menuitem"]')
     ).filter(isElementVisible);
 
     let focusedIndex = menuItems.findIndex(el =>
@@ -106,7 +102,7 @@ export default function MenuKeyboardNavigation({
     if (handled && focusedIndex >= 0) {
       event.stopPropagation();
       event.preventDefault();
-      /** @type {HTMLFormElement} */ (menuItems[focusedIndex]).focus();
+      menuItems[focusedIndex].focus();
     }
   };
 
