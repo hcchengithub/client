@@ -36,7 +36,7 @@ export default function MenuKeyboardNavigation({
   children,
   visible,
 }) {
-  const menuRef = useRef(/** @type {HTMLElement|null} */ null);
+  const menuRef = useRef(/** @type {HTMLDivElement|null} */ (null));
 
   useEffect(() => {
     let focusTimer = null;
@@ -57,8 +57,8 @@ export default function MenuKeyboardNavigation({
 
   const onKeyDown = event => {
     const menuItems = Array.from(
-      /** @ts-ignore - assume current is not null */
-      menuRef.current.querySelectorAll('[role^="menuitem"]')
+      /** @type {NodeListOf<HTMLElement>} */
+      (menuRef.current.querySelectorAll('[role^="menuitem"]'))
     ).filter(isElementVisible);
 
     let focusedIndex = menuItems.findIndex(el =>
